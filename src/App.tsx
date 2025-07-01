@@ -4,15 +4,13 @@ import {type ChangeEvent, useState} from "react";
 type WordType = {
     es: string
     ru: string
+    show: boolean
 }
 
 export function App() {
     const [words, setWords] = useState<Array<WordType>>([
-        {es: 'Buenos dias!', ru: 'Доброе утро!'}
+        {es: 'Buenos dias!', ru: 'Доброе утро!', show: false}
     ])
-
-    //если true - показать перевод на русский
-    const [showValue, setShowValue] = useState(false)
 
     const [rusValue, setRusValue] = useState('')
     const [esValue, setEsValue] = useState('')
@@ -31,18 +29,24 @@ export function App() {
         if (step === 'ru') {
             setStep('es')
         } else {
-            setWords(prevState => ([...prevState, {es: esValue, ru: rusValue}]))
+            setWords(prevState => ([...prevState, {es: esValue, ru: rusValue, show: false}]))
             setStep('ru')
             setRusValue('')
             setEsValue('')
         }
     }
-    console.log(words)
+
+    const onClickHandler = (index: number) => {
+        setWords(words.map((l, i) => i === index ? {
+            ...l,
+            show: !l.show
+        } : l))
+    }
 
     return (
         <>
-            <div onClick={() => setShowValue(!showValue)}>
-                {words.map((el, index) => <div key={index}>{showValue ? el.ru : el.es}</div>)}
+            <div>
+                {words.map((el, index) => <div key={index} onClick={() => onClickHandler(index)}>{el.show ? el.ru : el.es}</div>)}
             </div>
             <input onChange={onChangeHandler} value={step === 'ru' ? rusValue : esValue}/>
             <button onClick={addWord}>Сохранить</button>
